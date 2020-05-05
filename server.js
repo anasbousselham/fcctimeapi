@@ -6,6 +6,8 @@ var express = require('express');
 var app = express();
 var bodyParser = require('body-parser')
 var moment = require('moment')
+moment().format()
+
 // enable CORS (https://en.wikipedia.org/wiki/Cross-origin_resource_sharing)
 // so that your API is remotely testable by FCC 
 var cors = require('cors');
@@ -25,37 +27,35 @@ app.get("/api/hello", function (req, res) {
   res.json({greeting: 'hello API',author:'anas bousselham'});
 });
 
+app.get('/api/timestamp', (req, res) => {
+  const currentDate = new Date()
+  
+  res.json({
+    unix: currentDate.getTime(),
+    utc: currentDate.toUTCString()
+  })
+})
+
+
+
 app.get('/api/timestamp/:date_string',(req,res,next)=>{
-  const formats = [
-    'X',
-    'MMMM D, YYYY',
-    'MMMM D YYYY',
-    'MMM D, YYYY',
-    'MMM D YYYY',
-    'D MMMM YYYY',
-    'D MMM YYYY',
-    'YYYY D M',
-    'YYYY M D',
-    'YYYY-D-M',
-    'YYYY-M-D',
-    'M-D-YYYY',
-    'D-M-YYYY'
-  ];
-  const date = moment(req.params.date_string,formats,true)
-  let dateObj;
-  if (date.isValid()){
-   dateObj = {
-     unix: Number(date.format('X')),
-    utc: date.format('MMMM D, YYYY')
-    };
-  } else {
-    dateObj = {
-      unix: null,
-      natural: null
-    };
+  let date_input = req.params.date_string;
+  let date = new Date();
+  
+  if (isNumeric(date_input)) {
+    date_input = parseInt(date_input);
   }
-  res.json(dateObj);
+  
+  if (date_input !== undefined) {
+    date = new Date(date_input);
+  }
+  
+  return res.json({ unix: date.getTime(), utc: date.toUTCString() });
 });
+
+function isNumeric(n) {
+  return !isNaN(parseFloat(n)) && isFinite(n);
+}
 
 
 
