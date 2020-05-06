@@ -38,21 +38,31 @@ app.get('/api/timestamp', (req, res) => {
 
 
 
-app.get("/api/timestamp/:dateString",(req,res) => {
-  let datePattern = /^(\d{4})-0?(\d{1,2})-0?(\d{1,2})$/;
-  let resJson = {"error": "Invalid Date"};
-  
-  let dateString = req.params.dateString;
-  if(dateString && datePattern.test(dateString)){
-    let parsedDate = new Date(dateString);
-    if(parsedDate != "Invalid Date"){
-      resJson = {
-        "unix": parsedDate.getTime(),
-        "utc": parsedDate.toUTCString()
-      };
-    }
+
+
+
+app.get('/api/timestamp/:date_string', function(req, res) {
+ 
+  let dateString = req.params.date_string;
+
+ 
+  let date = (/\D/.test(dateString)) ? new Date(dateString) : new Date(parseInt(dateString));
+
+  console.log(date.toString())
+  if(date.toString() === "Invalid Date") {
+    res.json({
+      "error": date.toString()
+    })
   }
-  res.json(resJson);
+  
+  else {
+    res.json({
+      "unix": date.getTime(),
+      "utc": date.toUTCString()
+    });
+  }
+
+
 });
 
 
