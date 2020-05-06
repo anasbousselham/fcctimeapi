@@ -38,24 +38,23 @@ app.get('/api/timestamp', (req, res) => {
 
 
 
-app.get('/api/timestamp/:date_string',(req,res,next)=>{
-  let date_input = req.params.date_string;
-  let date = new Date();
+app.get("/api/timestamp/:dateString",(req,res) => {
+  let datePattern = /^(\d{4})-0?(\d{1,2})-0?(\d{1,2})$/;
+  let resJson = {"error": "Invalid Date"};
   
-  if (isNumeric(date_input)) {
-    date_input = parseInt(date_input);
+  let dateString = req.params.dateString;
+  if(dateString && datePattern.test(dateString)){
+    let parsedDate = new Date(dateString);
+    if(parsedDate != "Invalid Date"){
+      resJson = {
+        "unix": parsedDate.getTime(),
+        "utc": parsedDate.toUTCString()
+      };
+    }
   }
-  
-  if (date_input !== undefined) {
-    date = new Date(date_input);
-  }
-  
-  return res.json({ unix: date.getTime(), utc: date.toUTCString() });
+  res.json(resJson);
 });
 
-function isNumeric(n) {
-  return !isNaN(parseFloat(n)) && isFinite(n);
-}
 
 
 
